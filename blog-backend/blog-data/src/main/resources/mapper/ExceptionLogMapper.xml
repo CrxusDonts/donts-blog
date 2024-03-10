@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.donts.blog.mapper.ExceptionLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.donts.blog.entity.ExceptionLog">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="optUri" column="opt_uri" jdbcType="VARCHAR"/>
+        <result property="optMethod" column="opt_method" jdbcType="VARCHAR"/>
+        <result property="requestMethod" column="request_method" jdbcType="VARCHAR"/>
+        <result property="requestParam" column="request_param" jdbcType="VARCHAR"/>
+        <result property="optDesc" column="opt_desc" jdbcType="VARCHAR"/>
+        <result property="exceptionInfo" column="exception_info" jdbcType="VARCHAR"/>
+        <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+        <result property="ipSource" column="ip_source" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,opt_uri,opt_method,
+        request_method,request_param,opt_desc,
+        exception_info,ip_address,ip_source,
+        create_time
+    </sql>
+</mapper>
