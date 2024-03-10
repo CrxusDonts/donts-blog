@@ -21,7 +21,7 @@ public class JobLog implements Serializable {
     /**
      * 任务日志ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

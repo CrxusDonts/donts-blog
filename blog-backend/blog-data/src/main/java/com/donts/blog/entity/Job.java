@@ -21,7 +21,7 @@ public class Job implements Serializable {
     /**
      * 任务ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
