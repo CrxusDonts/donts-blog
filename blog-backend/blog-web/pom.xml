@@ -65,6 +65,10 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.donts</groupId>
+            <artifactId>blog-service</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
