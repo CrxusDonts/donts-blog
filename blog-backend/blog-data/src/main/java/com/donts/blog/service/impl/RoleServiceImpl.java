@@ -95,7 +95,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
                             .roleId(role.getId())
                             .resourceId(resourceId)
                             .build())
-                    .collect(Collectors.toList());
+                    .toList();
             roleResourceService.saveBatch(roleResourceList);
         }
         if (Objects.nonNull(roleDTO.getMenuIds())) {
@@ -107,7 +107,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
                             .roleId(role.getId())
                             .menuId(menuId)
                             .build())
-                    .collect(Collectors.toList());
+                    .toList();
             roleMenuService.saveBatch(roleMenuList);
         }
     }
