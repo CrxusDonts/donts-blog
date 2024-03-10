@@ -5,7 +5,7 @@
 <mapper namespace="com.donts.blog.mapper.WebsiteConfigMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.WebsiteConfig">
-        <id property="id" column="id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="config" column="config" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>

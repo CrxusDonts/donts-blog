@@ -23,17 +23,17 @@ public class RoleResource implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 角色id
      */
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 权限id
      */
-    private Integer resourceId;
+    private Long resourceId;
 
 
 }

@@ -20,12 +20,12 @@ public class Talk implements Serializable {
      * 说说id
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 说说内容

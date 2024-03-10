@@ -20,7 +20,7 @@ public class UserInfo implements Serializable {
      * 用户ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 邮箱号

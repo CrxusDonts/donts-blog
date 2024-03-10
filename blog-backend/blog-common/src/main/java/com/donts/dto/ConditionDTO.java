@@ -26,13 +26,13 @@ public class ConditionDTO implements Serializable {
     private String keywords;
 
     @Schema(name = "categoryId", description = "分类id", type = "Integer")
-    private Integer categoryId;
+    private Long categoryId;
 
     @Schema(name = "tagId", description = "标签id", type = "Integer")
-    private Integer tagId;
+    private Long tagId;
 
     @Schema(name = "albumId", description = "相册id", type = "Integer")
-    private Integer albumId;
+    private Long albumId;
 
     @Schema(name = "loginType", description = "登录类型", type = "Integer")
     private Integer loginType;

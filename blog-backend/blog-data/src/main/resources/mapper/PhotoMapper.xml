@@ -5,8 +5,8 @@
 <mapper namespace="com.donts.blog.mapper.PhotoMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.Photo">
-        <id property="id" column="id" jdbcType="INTEGER"/>
-        <result property="albumId" column="album_id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="albumId" column="album_id" jdbcType="BIGINT"/>
         <result property="photoName" column="photo_name" jdbcType="VARCHAR"/>
         <result property="photoDesc" column="photo_desc" jdbcType="VARCHAR"/>
         <result property="photoSrc" column="photo_src" jdbcType="VARCHAR"/>

@@ -22,7 +22,7 @@ public class PhotoAlbum implements Serializable {
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 相册名

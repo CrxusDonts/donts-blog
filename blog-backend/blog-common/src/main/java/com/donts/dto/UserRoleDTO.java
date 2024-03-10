@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRoleDTO {
 
-    private Integer id;
+    private Long userId;
 
     private String roleName;
 

@@ -20,7 +20,7 @@ public class ExceptionLog implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 请求接口

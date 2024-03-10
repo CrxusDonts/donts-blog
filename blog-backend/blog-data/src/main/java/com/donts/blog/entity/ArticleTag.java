@@ -17,17 +17,17 @@ public class ArticleTag implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 文章id
      */
-    private Integer articleId;
+    private Long articleId;
 
     /**
      * 标签id
      */
-    private Integer tagId;
+    private Long tagId;
 
 
 }

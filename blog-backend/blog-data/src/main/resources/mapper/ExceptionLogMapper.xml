@@ -5,7 +5,7 @@
 <mapper namespace="com.donts.blog.mapper.ExceptionLogMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.ExceptionLog">
-        <id property="id" column="id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="optUri" column="opt_uri" jdbcType="VARCHAR"/>
         <result property="optMethod" column="opt_method" jdbcType="VARCHAR"/>
         <result property="requestMethod" column="request_method" jdbcType="VARCHAR"/>

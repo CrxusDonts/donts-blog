@@ -20,7 +20,7 @@ public class Menu implements Serializable {
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 菜单名
@@ -60,7 +60,7 @@ public class Menu implements Serializable {
     /**
      * 父id
      */
-    private Integer parentId;
+    private Long parentId;
 
     /**
      * 是否隐藏  0否1是

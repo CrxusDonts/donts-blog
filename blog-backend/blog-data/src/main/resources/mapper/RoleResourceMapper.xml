@@ -5,9 +5,9 @@
 <mapper namespace="com.donts.blog.mapper.RoleResourceMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.RoleResource">
-        <id property="id" column="id" jdbcType="INTEGER"/>
-        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
-        <result property="resourceId" column="resource_id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="roleId" column="role_id" jdbcType="BIGINT"/>
+        <result property="resourceId" column="resource_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

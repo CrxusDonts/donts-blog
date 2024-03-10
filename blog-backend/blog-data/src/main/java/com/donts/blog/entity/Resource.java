@@ -20,7 +20,7 @@ public class Resource implements Serializable {
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 资源名
@@ -40,7 +40,7 @@ public class Resource implements Serializable {
     /**
      * 父模块id
      */
-    private Integer parentId;
+    private Long parentId;
 
     /**
      * 是否匿名访问 0否 1是

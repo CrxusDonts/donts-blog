@@ -5,8 +5,8 @@
 <mapper namespace="com.donts.blog.mapper.TalkMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.Talk">
-        <id property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
         <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="images" column="images" jdbcType="VARCHAR"/>
         <result property="isTop" column="is_top" jdbcType="TINYINT"/>

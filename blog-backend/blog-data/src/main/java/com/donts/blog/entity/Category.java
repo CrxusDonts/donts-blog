@@ -20,7 +20,7 @@ public class Category implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 分类名

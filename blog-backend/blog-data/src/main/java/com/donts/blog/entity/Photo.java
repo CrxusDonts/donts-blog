@@ -22,12 +22,12 @@ public class Photo implements Serializable {
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 相册id
      */
-    private Integer albumId;
+    private Long albumId;
 
     /**
      * 照片名

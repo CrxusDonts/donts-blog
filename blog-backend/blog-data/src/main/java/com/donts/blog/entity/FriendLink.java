@@ -20,7 +20,7 @@ public class FriendLink implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 链接名

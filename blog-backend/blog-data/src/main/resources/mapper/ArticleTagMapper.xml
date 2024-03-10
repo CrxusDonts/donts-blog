@@ -5,9 +5,9 @@
 <mapper namespace="com.donts.blog.mapper.ArticleTagMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.ArticleTag">
-        <id property="id" column="id" jdbcType="INTEGER"/>
-        <result property="articleId" column="article_id" jdbcType="INTEGER"/>
-        <result property="tagId" column="tag_id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="articleId" column="article_id" jdbcType="BIGINT"/>
+        <result property="tagId" column="tag_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

@@ -17,17 +17,17 @@ public class UserRole implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 角色id
      */
-    private Integer roleId;
+    private Long roleId;
 
 
 }

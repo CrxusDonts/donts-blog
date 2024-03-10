@@ -20,12 +20,12 @@ public class UserAuth implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户信息id
      */
-    private Integer userInfoId;
+    private Long userInfoId;
 
     /**
      * 用户名

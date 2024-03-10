@@ -20,7 +20,7 @@ public class OperationLog implements Serializable {
      * 主键id
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 操作模块
@@ -65,7 +65,7 @@ public class OperationLog implements Serializable {
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户昵称

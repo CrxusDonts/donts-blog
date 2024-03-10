@@ -15,20 +15,20 @@ import java.util.List;
 @NoArgsConstructor
 public class RoleVO implements Serializable {
 
-    private Integer roleId;
+    private Long roleId;
 
     private String roleName;
 
     private LocalDateTime createTime;
 
-    private Integer isDisable;
+    private Boolean isDisable;
     /**
      * 资源列表
      */
-    private List<Integer> resourceIds;
+    private List<Long> resourceIds;
     /**
      * 菜单列表
      */
-    private List<Integer> menuIds;
+    private List<Long> menuIds;
 
 }

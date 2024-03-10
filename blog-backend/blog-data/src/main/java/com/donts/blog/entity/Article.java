@@ -20,17 +20,17 @@ public class Article implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 作者
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 文章分类
      */
-    private Integer categoryId;
+    private Long categoryId;
 
     /**
      * 文章缩略图

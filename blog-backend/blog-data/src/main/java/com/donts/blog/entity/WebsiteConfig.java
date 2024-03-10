@@ -20,7 +20,7 @@ public class WebsiteConfig implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 配置信息

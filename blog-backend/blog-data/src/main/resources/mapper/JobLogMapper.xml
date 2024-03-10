@@ -5,8 +5,8 @@
 <mapper namespace="com.donts.blog.mapper.JobLogMapper">
 
     <resultMap id="BaseResultMap" type="com.donts.blog.entity.JobLog">
-        <id property="id" column="id" jdbcType="INTEGER"/>
-        <result property="jobId" column="job_id" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="jobId" column="job_id" jdbcType="BIGINT"/>
         <result property="jobName" column="job_name" jdbcType="VARCHAR"/>
         <result property="jobGroup" column="job_group" jdbcType="VARCHAR"/>
         <result property="invokeTarget" column="invoke_target" jdbcType="VARCHAR"/>
