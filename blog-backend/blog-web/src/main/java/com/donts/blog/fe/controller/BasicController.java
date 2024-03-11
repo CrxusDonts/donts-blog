@@ -3,6 +3,7 @@ package com.donts.blog.fe.controller;
 
 import com.donts.blog.entity.About;
 import com.donts.blog.service.AboutService;
+import com.donts.dto.ConditionDTO;
 import jakarta.annotation.Resource;
 import lombok.val;
 import org.springframework.stereotype.Controller;
@@ -50,7 +51,7 @@ public class BasicController {
 
     // http://127.0.0.1:8080/html
     @RequestMapping("/html")
-    public String html() {
+    public String html(ConditionDTO conditionDTO) {
         return "index.html";
     }
 

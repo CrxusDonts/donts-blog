@@ -1,5 +1,6 @@
 package com.donts.blog.service.impl;
 
+import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,10 +9,10 @@ import com.donts.blog.entity.RoleMenu;
 import com.donts.blog.entity.RoleResource;
 import com.donts.blog.entity.UserRole;
 import com.donts.blog.mapper.RoleMapper;
-import com.donts.blog.mapper.UserRoleMapper;
 import com.donts.blog.service.RoleMenuService;
 import com.donts.blog.service.RoleResourceService;
 import com.donts.blog.service.RoleService;
+import com.donts.blog.service.UserRoleService;
 import com.donts.dto.ConditionDTO;
 import com.donts.dto.RoleDTO;
 import com.donts.dto.RoleVO;
@@ -26,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+
+import static com.donts.consts.JetCacheNameConst.USER_ROLE_CACHE_NAME;
+import static com.donts.consts.JetCacheNameConst.USER_ROLE_CACHE_NAME_WITH_RESOURCE_AND_MENU;
 
 
 @Service
@@ -37,7 +40,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     private RoleMapper roleMapper;
 
     @Resource
-    private UserRoleMapper userRoleMapper;
+    private UserRoleService userRoleService;
 
     @Resource
     private RoleResourceService roleResourceService;
@@ -65,7 +68,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
                                 .roleName(role.getRoleName())
                                 .createTime(role.getCreateTime())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .get();
         return PageResult.of(roleVOList, page.getTotal(), page.getPages(), page.getCurrent(), page.getSize());
     }
@@ -114,14 +117,50 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
 
     @Override
     public void deleteRoles(List<Integer> roleIdList) {
-        Long count = userRoleMapper.selectCount(new LambdaQueryWrapper<UserRole>()
+        long count = userRoleService.count(new LambdaQueryWrapper<UserRole>()
                 .in(UserRole::getRoleId, roleIdList));
         if (count > 0) {
             throw new BlogBizException("该角色下存在用户");
         }
         roleMapper.deleteBatchIds(roleIdList);
     }
+
+    @Override
+    @Cached(name = USER_ROLE_CACHE_NAME, key = "#userId", expire = 3600)
+    public List<RoleVO> listRoles(String userId) {
+        List<UserRole> userRoles = userRoleService.list(new LambdaQueryWrapper<UserRole>()
+                .eq(UserRole::getUserId, userId));
+        List<Long> roleIdList = userRoles.stream().map(UserRole::getRoleId).toList();
+        List<Role> roles = roleMapper.selectList(new LambdaQueryWrapper<Role>()
+                .in(Role::getId, roleIdList));
+        return roles.stream().map(role -> RoleVO.builder()
+                        .roleId(role.getId())
+                        .roleName(role.getRoleName())
+                        .createTime(role.getCreateTime())
+                        .isDisable(role.getIsDisable())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    @Cached(name = USER_ROLE_CACHE_NAME_WITH_RESOURCE_AND_MENU, key = "#userId", expire = 3600)
+    public List<RoleVO> listRolesWithMenuAndResource(String userId) {
+        List<RoleVO> roleVOList = listRoles(userId);
+        roleVOList.forEach(roleVO ->
+        {
+            List<Long> resourceIds = roleResourceService.list(new LambdaQueryWrapper<RoleResource>()
+                            .eq(RoleResource::getRoleId, roleVO.getRoleId()))
+                    .stream().map(RoleResource::getResourceId).toList();
+            roleVO.setResourceIds(resourceIds);
+            List<Long> menuIds = roleMenuService.list(new LambdaQueryWrapper<RoleMenu>()
+                            .eq(RoleMenu::getRoleId, roleVO.getRoleId()))
+                    .stream().map(RoleMenu::getMenuId).toList();
+            roleVO.setMenuIds(menuIds);
+        });
+        return roleVOList;
+    }
 }
+
 
 
 

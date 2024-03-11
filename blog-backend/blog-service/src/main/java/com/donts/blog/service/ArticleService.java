@@ -2,6 +2,9 @@ package com.donts.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.donts.blog.entity.Article;
+import com.donts.response.PageResult;
+import com.donts.vo.ArticleCardVO;
+import com.donts.vo.TopAndFeaturedArticlesVO;
 
 /**
  * @author djy12
@@ -10,4 +13,8 @@ import com.donts.blog.entity.Article;
  */
 public interface ArticleService extends IService<Article> {
 
+    TopAndFeaturedArticlesVO listTopAndFeaturedArticles();
+
+
+    PageResult<ArticleCardVO> pageArticles(Integer page, Integer size);
 }

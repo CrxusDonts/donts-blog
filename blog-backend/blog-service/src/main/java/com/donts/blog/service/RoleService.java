@@ -18,4 +18,20 @@ public interface RoleService extends IService<Role> {
     void saveOrUpdateRole(RoleDTO roleDTO);
 
     void deleteRoles(List<Integer> roleIdList);
+
+    /**
+     * 获取用户角色
+     *
+     * @param userId 用户id
+     * @return 用户角色
+     */
+    List<RoleVO> listRoles(String userId);
+
+    /**
+     * 获取用户角色 以及角色对应的菜单和资源
+     *
+     * @param userId 用户id
+     * @return 用户角色 以及角色对应的菜单和资源
+     */
+    List<RoleVO> listRolesWithMenuAndResource(String userId);
 }

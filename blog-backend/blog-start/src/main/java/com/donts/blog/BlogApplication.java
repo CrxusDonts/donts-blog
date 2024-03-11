@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @MapperScan(basePackages = "com.donts.*.mapper")
 @EnableMethodCache(basePackages = "com.donts.blog")
+
 public class BlogApplication {
 
 

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PageResult<T extends Serializable> {
+public class PageResult<T extends Serializable> implements Serializable {
 
     private List<T> records;
 

@@ -27,7 +27,12 @@
             <artifactId>hutool-all</artifactId>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.donts</groupId>
+            <artifactId>blog-data</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
         <!--swagger-->
         <dependency>
             <groupId>org.springdoc</groupId>
