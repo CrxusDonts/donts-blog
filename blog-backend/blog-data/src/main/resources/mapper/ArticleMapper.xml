@@ -31,4 +31,29 @@
         password,original_url,create_time,
         update_time
     </sql>
+    <select id="listTopAndFeaturedArticles" resultType="com.donts.blog.entity.Article">
+        select id,
+               user_id,
+               category_id,
+               article_cover,
+               article_title,
+               article_abstract,
+               article_content,
+               is_top,
+               is_featured,
+               is_delete,
+               status,
+               type,
+               password,
+               original_url,
+               create_time,
+               update_time
+        from t_article
+        where is_delete = false
+          and (is_top = true
+            or is_featured = true)
+          and status in (1, 2)
+        order by create_time desc
+        limit 10
+    </select>
 </mapper>

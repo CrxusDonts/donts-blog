@@ -45,7 +45,7 @@ public class Resource implements Serializable {
     /**
      * 是否匿名访问 0否 1是
      */
-    private Integer isAnonymous;
+    private Boolean isAnonymous;
 
     /**
      * 创建时间

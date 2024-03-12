@@ -50,7 +50,7 @@ public class UserInfo implements Serializable {
     /**
      * 是否订阅
      */
-    private Integer isSubscribe;
+    private Boolean isSubscribe;
 
     /**
      * 是否禁用

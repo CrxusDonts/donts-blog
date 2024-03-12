@@ -8,8 +8,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-;
-
 /**
  * @TableName t_article
  */
@@ -55,17 +53,17 @@ public class Article implements Serializable {
     /**
      * 是否置顶 0否 1是
      */
-    private Integer isTop;
+    private Boolean isTop;
 
     /**
      * 是否推荐 0否 1是
      */
-    private Integer isFeatured;
+    private Boolean isFeatured;
 
     /**
      * 是否删除  0否 1是
      */
-    private Integer isDelete;
+    private Boolean isDelete;
 
     /**
      * 状态值 1公开 2私密 3草稿

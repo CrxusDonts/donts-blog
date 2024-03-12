@@ -47,7 +47,7 @@ public class Photo implements Serializable {
     /**
      * 是否删除
      */
-    private Integer isDelete;
+    private Boolean isDelete;
 
     /**
      * 创建时间

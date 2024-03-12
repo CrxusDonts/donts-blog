@@ -1,5 +1,6 @@
 package com.donts.blog.service.impl;
 
+import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,15 +14,21 @@ import com.donts.blog.service.CategoryService;
 import com.donts.blog.service.TagService;
 import com.donts.blog.service.UserInfoService;
 import com.donts.enums.ArticleStatusEnum;
+import com.donts.helper.DtoAndVoHelper;
 import com.donts.response.PageResult;
 import com.donts.vo.ArticleCardVO;
 import com.donts.vo.TopAndFeaturedArticlesVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.donts.consts.JetCacheNameConst.INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME;
+import static com.donts.helper.DtoAndVoHelper.convertArticleToArticleCardVO;
 
 /**
  * @author djy12
@@ -45,8 +52,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
 
     @Override
+    @Cached(name = INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME, expire = 24 * 60 * 60)
     public TopAndFeaturedArticlesVO listTopAndFeaturedArticles() {
-        return null;
+        List<Article> articles = articleMapper.listTopAndFeaturedArticles();
+        List<Long> userIds = articles.stream().map(Article::getUserId).toList();
+        Map<Long, UserInfo> userInfoMap = userInfoService.listUserInfoMapByUserIds(userIds);
+        List<ArticleCardVO> articleCardVOList = articles.stream()
+                .map(article ->
+                {
+                    ArticleCardVO articleCardVO = DtoAndVoHelper.convertArticleToArticleCardVO(article);
+                    articleCardVO.setAuthor(userInfoMap.get(article.getUserId()));
+                    return articleCardVO;
+                })
+                .collect(Collectors.toList());
+
+        Optional<ArticleCardVO> topArticleOptional = articleCardVOList.stream()
+                .filter(articleCardVO -> Boolean.TRUE.equals(articleCardVO.getIsTop()))
+                .findFirst();
+
+        topArticleOptional.ifPresent(articleCardVOList::remove);
+        return new TopAndFeaturedArticlesVO(topArticleOptional.orElse(null), articleCardVOList);
     }
 
     @Override
@@ -61,18 +86,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         // 第二步：构造ArticleCardVO列表，遍历文章集合并填充相关联的数据
         List<ArticleCardVO> list = articles.stream().map(article ->
         {
-            ArticleCardVO dto = new ArticleCardVO();
-
-            // 设置基本属性
-            dto.setId(article.getId());
-            dto.setArticleCover(article.getArticleCover());
-            dto.setArticleTitle(article.getArticleTitle());
-            dto.setArticleContent(getTruncatedContent(article.getArticleAbstract(), article.getArticleContent()));
-            dto.setIsTop(article.getIsTop());
-            dto.setIsFeatured(article.getIsFeatured());
-            dto.setStatus(article.getStatus());
-            dto.setCreateTime(article.getCreateTime());
-            dto.setUpdateTime(article.getUpdateTime());
+            ArticleCardVO dto = convertArticleToArticleCardVO(article);
 
             // 查询并设置作者信息
             UserInfo user = userInfoService.getById(article.getUserId());
@@ -99,16 +113,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
 
-    /**
-     * 辅助方法，用于截取文章摘要或内容
-     *
-     * @param articleAbstract 文章摘要
-     * @param articleContent  文章内容
-     * @return 截取后的文章内容
-     */
-    private String getTruncatedContent(String articleAbstract, String articleContent) {
-        return StringUtils.isBlank(articleAbstract) ? StringUtils.substring(articleContent, 0, 500) : articleAbstract;
-    }
 }
 
 

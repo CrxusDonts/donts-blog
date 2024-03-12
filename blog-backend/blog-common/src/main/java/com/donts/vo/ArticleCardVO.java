@@ -26,9 +26,9 @@ public class ArticleCardVO implements java.io.Serializable {
     @Schema(name = "articleContent", description = "文章内容", type = "String")
     private String articleContent;
     @Schema(name = "isTop", description = "是否置顶", type = "Integer")
-    private Integer isTop;
+    private Boolean isTop;
     @Schema(name = "isFeatured", description = "是否推荐", type = "Integer")
-    private Integer isFeatured;
+    private Boolean isFeatured;
     @Schema(name = "author", description = "作者", type = "UserInfo")
     private UserInfo author;
     @Schema(name = "categoryName", description = "分类名", type = "String")

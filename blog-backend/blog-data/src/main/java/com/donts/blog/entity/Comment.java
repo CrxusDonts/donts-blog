@@ -55,12 +55,12 @@ public class Comment implements Serializable {
     /**
      * 是否删除  0否 1是
      */
-    private Integer isDelete;
+    private Boolean isDelete;
 
     /**
      * 是否审核
      */
-    private Integer isReview;
+    private Boolean isReview;
 
     /**
      * 评论时间

@@ -40,7 +40,7 @@ public class Talk implements Serializable {
     /**
      * 是否置顶
      */
-    private Integer isTop;
+    private Boolean isTop;
 
     /**
      * 状态 1.公开 2.私密

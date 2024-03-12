@@ -42,7 +42,7 @@ public class PhotoAlbum implements Serializable {
     /**
      * 是否删除
      */
-    private Integer isDelete;
+    private Boolean isDelete;
 
     /**
      * 状态值 1公开 2私密

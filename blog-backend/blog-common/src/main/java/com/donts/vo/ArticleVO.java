@@ -31,16 +31,17 @@ public class ArticleVO implements java.io.Serializable {
     @Schema(name = "articleContent", description = "文章内容", type = "String")
     private String articleContent;
     @Schema(name = "isTop", description = "是否置顶", type = "Integer")
-    private Integer isTop;
+    private Boolean isTop;
     @Schema(name = "isFeatured", description = "是否推荐", type = "Integer")
-    private Integer isFeatured;
+    private Boolean isFeatured;
     @Schema(name = "isDelete", description = "是否删除", type = "Integer")
-    private Integer isDelete;
-    @Schema(name = "status", description = "状态 1公开 2私密 3草稿", type = "Integer")
+    private Boolean isDelete;
     /**
      * 状态值 1公开 2私密 3草稿
+     *
      * @see com.donts.enums.ArticleStatusEnum
      */
+    @Schema(name = "status", description = "状态 1公开 2私密 3草稿", type = "Integer")
     private Integer status;
     @Schema(name = "tags", description = "标签列表", type = "List<Tag>")
     private List<Tag> tags;

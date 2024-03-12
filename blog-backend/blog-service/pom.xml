@@ -53,9 +53,10 @@
             <version>1.37.0</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.donts</groupId>
-            <artifactId>blog-data</artifactId>
+            <artifactId>blog-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

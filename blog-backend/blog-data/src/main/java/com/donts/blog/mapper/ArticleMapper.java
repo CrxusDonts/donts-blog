@@ -3,6 +3,8 @@ package com.donts.blog.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.donts.blog.entity.Article;
 
+import java.util.List;
+
 /**
  * @author djy12
  * @description 针对表【t_article】的数据库操作Mapper
@@ -11,6 +13,7 @@ import com.donts.blog.entity.Article;
  */
 public interface ArticleMapper extends BaseMapper<Article> {
 
+    List<Article> listTopAndFeaturedArticles();
 }
 
 

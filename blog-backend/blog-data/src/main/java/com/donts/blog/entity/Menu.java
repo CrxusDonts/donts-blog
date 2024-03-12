@@ -65,7 +65,7 @@ public class Menu implements Serializable {
     /**
      * 是否隐藏  0否1是
      */
-    private Integer isHidden;
+    private Boolean isHidden;
 
 
 }
