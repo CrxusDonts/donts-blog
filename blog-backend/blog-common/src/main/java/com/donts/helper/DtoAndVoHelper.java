@@ -2,21 +2,38 @@ package com.donts.helper;
 
 import com.donts.blog.entity.Article;
 import com.donts.vo.ArticleCardVO;
+import com.donts.vo.ArticleVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
+@Slf4j
 public class DtoAndVoHelper {
+    private static final String LOG_PREFIX = "DtoAndVoHelper";
+
+    private DtoAndVoHelper() {
+    }
+
     public static ArticleCardVO convertArticleToArticleCardVO(Article article) {
         ArticleCardVO dto = new ArticleCardVO();
-        dto.setId(article.getId());
-        dto.setArticleCover(article.getArticleCover());
-        dto.setArticleTitle(article.getArticleTitle());
-        dto.setArticleContent(getTruncatedContent(article.getArticleAbstract(), article.getArticleContent()));
-        dto.setIsTop(article.getIsTop());
-        dto.setIsFeatured(article.getIsFeatured());
-        dto.setStatus(article.getStatus());
-        dto.setCreateTime(article.getCreateTime());
-        dto.setUpdateTime(article.getUpdateTime());
+        try {
+            BeanUtils.copyProperties(article, dto);
+            dto.setArticleContent(getTruncatedContent(article.getArticleAbstract(), article.getArticleContent()));
+        } catch (Exception e) {
+            log.error(" {} convertArticleToArticleCardVO ", LOG_PREFIX, e);
+        }
         return dto;
+    }
+
+    public static ArticleVO convertArticleToArticleVO(Article article) {
+        ArticleVO vo = new ArticleVO();
+        try {
+            BeanUtils.copyProperties(article, vo);
+            vo.setArticleContent(getTruncatedContent(article.getArticleAbstract(), article.getArticleContent()));
+        } catch (Exception e) {
+            log.error(" {} convertArticleToArticleVO ", LOG_PREFIX, e);
+        }
+        return vo;
     }
 
     /**

@@ -56,4 +56,20 @@
         order by create_time desc
         limit 10
     </select>
+    <select id="getPreArticleId" resultType="java.lang.Long">
+        select id
+        from t_article
+        where id &lt; #{articleId}
+          and is_delete = false
+          and status in (1, 2)
+        limit 1
+    </select>
+    <select id="getNextArticleId" resultType="java.lang.Long">
+        select id
+        from t_article
+        where id &gt; #{articleId}
+          and is_delete = false
+          and status in (1, 2)
+        limit 1
+    </select>
 </mapper>

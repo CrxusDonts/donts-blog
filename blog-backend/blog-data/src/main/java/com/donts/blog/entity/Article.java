@@ -67,11 +67,13 @@ public class Article implements Serializable {
 
     /**
      * 状态值 1公开 2私密 3草稿
+     * @see com.donts.enums.ArticleStatusEnum
      */
     private Integer status;
 
     /**
      * 文章类型 1原创 2转载 3翻译
+     * @see com.donts.enums.ArticleTypeEnum
      */
     private Integer type;
 

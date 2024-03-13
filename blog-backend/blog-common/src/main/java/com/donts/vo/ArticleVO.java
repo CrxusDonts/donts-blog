@@ -19,7 +19,7 @@ import java.util.List;
 @Schema(description = "文章")
 public class ArticleVO implements java.io.Serializable {
     @Schema(name = "id", description = "文章Id", type = "Long")
-    private Integer id;
+    private Long id;
     @Schema(name = "author", description = "作者", type = "UserInfo")
     private UserInfo author;
     @Schema(name = "categoryName", description = "分类名", type = "String")

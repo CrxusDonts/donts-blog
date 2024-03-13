@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static com.donts.consts.JetCacheNameConst.USER_ROLE_CACHE_NAME;
-import static com.donts.consts.JetCacheNameConst.USER_ROLE_CACHE_NAME_WITH_RESOURCE_AND_MENU;
+import static com.donts.consts.CacheNameConst.USER_ROLE_CACHE_NAME;
+import static com.donts.consts.CacheNameConst.USER_ROLE_CACHE_NAME_WITH_RESOURCE_AND_MENU;
 
 
 @Service

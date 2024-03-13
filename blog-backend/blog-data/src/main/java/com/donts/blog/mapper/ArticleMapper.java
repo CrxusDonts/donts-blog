@@ -14,6 +14,10 @@ import java.util.List;
 public interface ArticleMapper extends BaseMapper<Article> {
 
     List<Article> listTopAndFeaturedArticles();
+
+    Long getPreArticleId(Long articleId);
+
+    Long getNextArticleId(Long articleId);
 }
 
 

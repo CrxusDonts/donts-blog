@@ -4,18 +4,16 @@ import com.donts.blog.service.ArticleService;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleCardVO;
+import com.donts.vo.ArticleVO;
 import com.donts.vo.TopAndFeaturedArticlesVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "ArticleController",
-        description = "文章模块"
-)
+@Tag(name = "ArticleController", description = "文章模块")
+@RequestMapping("/fe/api")
 public class ArticleController {
 
     @Resource
@@ -31,9 +29,26 @@ public class ArticleController {
     //articles?page=2&size=10
     @Operation(summary = "分页获取文章列表")
     @GetMapping("/articles")
-    public UnifiedResp<PageResult<ArticleCardVO>> pageArticles(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public UnifiedResp<PageResult<ArticleCardVO>> pageArticles(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                               @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return UnifiedResp.success(articleService.pageArticles(page, size));
 
+    }
+
+    @Operation(summary = "根据分类id分页获取文章")
+    @GetMapping("/articles/category/{categoryId}")
+    public UnifiedResp<PageResult<ArticleCardVO>> listArticlesByCategoryId(@PathVariable("categoryId") Long categoryId,
+                                                                           @RequestParam(value = "page",
+                                                                                   defaultValue = "1") Integer page,
+                                                                           @RequestParam(value = "size",
+                                                                                   defaultValue = "10") Integer size) {
+        return UnifiedResp.success(articleService.pageArticlesByCategoryId(categoryId, page, size));
+    }
+
+    @Operation(summary = "根据id获取文章")
+    @GetMapping("/articles/{articleId}")
+    public UnifiedResp<ArticleVO> findArticleById(@PathVariable("articleId") Long articleId) {
+        return articleService.findArticleById(articleId);
     }
 
 //    @Operation(summary = "根据id获取文章")
@@ -44,7 +59,8 @@ public class ArticleController {
 //
 //    @Operation(summary = "根据分类id更新文章")
 //    @PutMapping("/article/{articleId}")
-//    public UnifiedResp<ArticleCardVO> updateArticleById(@PathVariable("articleId") Long articleId, @RequestBody ArticleCardVO articleCardVO) {
+//    public UnifiedResp<ArticleCardVO> updateArticleById(@PathVariable("articleId") Long articleId, @RequestBody
+//    ArticleCardVO articleCardVO) {
 //        return UnifiedResp.success(articleService.updateArticleById(articleId, articleCardVO));
 //    }
 //
