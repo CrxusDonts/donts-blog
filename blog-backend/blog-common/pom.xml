@@ -10,7 +10,8 @@
     </parent>
 
     <artifactId>blog-common</artifactId>
-
+    <name>blog-common</name>
+    <description>cmmmon 模块，存放公共代码</description>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

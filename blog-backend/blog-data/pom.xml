@@ -10,7 +10,8 @@
     </parent>
 
     <artifactId>blog-data</artifactId>
-
+    <name>blog-data</name>
+    <description>data 模块，存放数据访问层的逻辑</description>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
