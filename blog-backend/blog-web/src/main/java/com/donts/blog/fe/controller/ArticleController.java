@@ -1,6 +1,7 @@
 package com.donts.blog.fe.controller;
 
 import com.donts.blog.service.ArticleService;
+import com.donts.dto.ArticlePasswordDTO;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleCardVO;
@@ -9,6 +10,7 @@ import com.donts.vo.TopAndFeaturedArticlesVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,6 +51,22 @@ public class ArticleController {
     @GetMapping("/articles/{articleId}")
     public UnifiedResp<ArticleVO> findArticleById(@PathVariable("articleId") Long articleId) {
         return articleService.findArticleById(articleId);
+    }
+
+    @Operation(summary = "校验文章访问密码")
+    @PostMapping("/articles/access")
+    public UnifiedResp<String> accessArticle(@Valid @RequestBody ArticlePasswordDTO articlePasswordDTO) {
+        return articleService.accessArticle(articlePasswordDTO);
+    }
+
+    @Operation(summary = "根据标签id获取文章")
+    @GetMapping("/articles/tag/{tagId}")
+    public UnifiedResp<PageResult<ArticleCardVO>> pageArticlesByTagId(@PathVariable("tagId") Long tagId,
+                                                                      @RequestParam(value = "page",
+                                                                              defaultValue = "1") Integer page,
+                                                                      @RequestParam(value = "size",
+                                                                              defaultValue = "10") Integer size) {
+        return articleService.pageArticlesByTagId(tagId, page, size);
     }
 
 //    @Operation(summary = "根据id获取文章")

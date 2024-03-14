@@ -2,6 +2,7 @@ package com.donts.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.donts.blog.entity.Article;
+import com.donts.dto.ArticlePasswordDTO;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleCardVO;
@@ -23,6 +24,7 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 分页查询文章
+     *
      * @param page 页码
      * @param size 每页大小
      * @return 文章列表
@@ -48,4 +50,21 @@ public interface ArticleService extends IService<Article> {
      */
     UnifiedResp<ArticleVO> findArticleById(Long articleId);
 
+    /**
+     * 校验文章访问密码
+     *
+     * @param articlePasswordDTO 文章密码
+     * @return 校验结果
+     */
+    UnifiedResp<String> accessArticle(ArticlePasswordDTO articlePasswordDTO);
+
+    /**
+     * 根据标签id获取文章
+     *
+     * @param tagId 标签id
+     * @param page  页码
+     * @param size  每页大小
+     * @return 文章列表
+     */
+    UnifiedResp<PageResult<ArticleCardVO>> pageArticlesByTagId(Long tagId, Integer page, Integer size);
 }

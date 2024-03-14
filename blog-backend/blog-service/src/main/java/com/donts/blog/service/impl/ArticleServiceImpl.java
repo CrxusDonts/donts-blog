@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.donts.blog.entity.*;
 import com.donts.blog.mapper.ArticleMapper;
+import com.donts.blog.role.ArticleAccessTokenGenerator;
 import com.donts.blog.service.*;
+import com.donts.dto.ArticlePasswordDTO;
 import com.donts.enums.ArticleStatusEnum;
 import com.donts.exception.BlogBizException;
 import com.donts.helper.DtoAndVoHelper;
@@ -29,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static com.donts.consts.CacheNameConst.*;
 import static com.donts.enums.RespStatus.ARTICLE_ACCESS_FAIL;
@@ -59,7 +61,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     @Resource
     private TagService tagService;
 
-    @Resource
+    @Resource(name = "stringObjectRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private ArticleTagService articleTagService;
@@ -72,7 +74,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     @Cached(name = INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME, expire = 24 * 60 * 60)
     public TopAndFeaturedArticlesVO listTopAndFeaturedArticles() {
         List<Article> articles = articleMapper.listTopAndFeaturedArticles();
-        List<Long> userIds = articles.stream().map(Article::getUserId).collect(Collectors.toList());
+        List<Long> userIds = articles.stream().map(Article::getUserId).toList();
         Map<Long, UserInfo> userInfoMap = userInfoService.listUserInfoMapByUserIds(userIds);
 
         List<ArticleCardVO> articleCardVOList = new ArrayList<>();
@@ -116,56 +118,120 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     @Override
     public UnifiedResp<ArticleVO> findArticleById(Long articleId) {
-        Article articleForCheck = articleMapper.selectById(articleId);
-        if (Objects.isNull(articleForCheck)) {
-            UnifiedResp.fail("文章不存在");
+        Article articleForCheck = getArticleForCheck(articleId);
+        if (articleForCheck == null) {
+            return UnifiedResp.fail("文章不存在");
         }
-        if (articleForCheck.getStatus().equals(ArticleStatusEnum.PRIVATE.getCode())) {
-            Boolean isAccess;
-            isAccess = redisTemplate.opsForSet().isMember(PRIVATE_ARTICLE_ACCESSIBLE_USER_CACHE_NAME + articleId,
-                    StpUtil.getLoginIdAsString());
-            if (Boolean.FALSE.equals(isAccess)) {
+        //是否是私密文章
+        if (ArticleStatusEnum.PRIVATE.getCode().equals(articleForCheck.getStatus())) {
+            String accessToken = generateArticleAccessToken(articleId, articleForCheck.getPassword());
+            if (Objects.isNull(redisTemplate.opsForValue().get(accessToken))) {
                 return UnifiedResp.fail(ARTICLE_ACCESS_FAIL);
             }
         }
+
         updateArticleViewsCount(articleId);
-        //TODO 配置线程池，避免使用commonPool
+
+        ArticleVO article = getArticleDetails(articleId);
+        if (article == null) {
+            return UnifiedResp.fail(ARTICLE_DETAIL_FAIL);
+        }
+
+        return UnifiedResp.success(article);
+    }
+
+    private Article getArticleForCheck(Long articleId) {
+        return articleMapper.selectById(articleId);
+    }
+
+
+    private ArticleVO getArticleDetails(Long articleId) {
         CompletableFuture<ArticleVO> asyncArticle =
                 CompletableFuture.supplyAsync(() -> articleServiceProxy.getArticleVOFromDB(articleId));
-        CompletableFuture<ArticleCardVO> asyncPreArticle = CompletableFuture.supplyAsync(() ->
-        {
-            Long preArticleId = articleMapper.getPreArticleId(articleId);
-            if (Objects.isNull(preArticleId)) {
-                return null;
-            }
-            return articleServiceProxy.getArticleCardVOFromDB(preArticleId);
-        });
-        CompletableFuture<ArticleCardVO> asyncNextArticle = CompletableFuture.supplyAsync(() ->
-        {
-            Long nextArticleId = articleMapper.getNextArticleId(articleId);
-            if (Objects.isNull(nextArticleId)) {
-                return null;
-            }
-            return articleServiceProxy.getArticleCardVOFromDB(nextArticleId);
-        });
+        CompletableFuture<ArticleCardVO> asyncPreArticle = getAsyncPreArticle(articleId);
+        CompletableFuture<ArticleCardVO> asyncNextArticle = getAsyncNextArticle(articleId);
+
         CompletableFuture.allOf(asyncArticle, asyncPreArticle, asyncNextArticle)
                 .exceptionally(e ->
                 {
                     log.error("{} 获取文章详情失败", LOG_PREFIX, e);
                     throw new BlogBizException(ARTICLE_DETAIL_FAIL);
                 }).join();
+
         ArticleVO article = asyncArticle.join();
-        if (Objects.isNull(article)) {
-            return UnifiedResp.fail(ARTICLE_DETAIL_FAIL);
+        if (article != null) {
+            setArticleDetails(article, articleId, asyncPreArticle, asyncNextArticle);
         }
+
+        return article;
+    }
+
+    private CompletableFuture<ArticleCardVO> getAsyncPreArticle(Long articleId) {
+        return CompletableFuture.supplyAsync(() ->
+        {
+            Long preArticleId = articleMapper.getPreArticleId(articleId);
+            return preArticleId == null ? null : articleServiceProxy.getArticleCardVOFromDB(preArticleId);
+        });
+    }
+
+    private CompletableFuture<ArticleCardVO> getAsyncNextArticle(Long articleId) {
+        return CompletableFuture.supplyAsync(() ->
+        {
+            Long nextArticleId = articleMapper.getNextArticleId(articleId);
+            return nextArticleId == null ? null : articleServiceProxy.getArticleCardVOFromDB(nextArticleId);
+        });
+    }
+
+    private void setArticleDetails(ArticleVO article, Long articleId,
+                                   CompletableFuture<ArticleCardVO> asyncPreArticle,
+                                   CompletableFuture<ArticleCardVO> asyncNextArticle) {
         Double score = redisTemplate.opsForZSet().score(ARTICLE_VIEWS_COUNT, articleId);
-        if (Objects.nonNull(score)) {
+        if (score != null) {
             article.setViewCount(score.intValue());
         }
         article.setPreArticleCard(asyncPreArticle.join());
         article.setNextArticleCard(asyncNextArticle.join());
-        return UnifiedResp.success(article);
     }
+
+    @Override
+    public UnifiedResp<String> accessArticle(ArticlePasswordDTO articlePasswordDTO) {
+        String accessToken = null;
+        Article article = articleMapper.selectOne(new LambdaQueryWrapper<Article>().eq(Article::getId,
+                articlePasswordDTO.getArticleId()));
+        if (Objects.isNull(article)) {
+            return UnifiedResp.fail("文章不存在");
+        }
+        if (article.getPassword().equals(articlePasswordDTO.getArticlePassword())) {
+            //下发一个文章访问令牌
+            accessToken = generateArticleAccessToken(article.getId(), article.getPassword());
+            redisTemplate.opsForValue().set(accessToken, article.getId(), 60L * 60L, TimeUnit.SECONDS);
+            return UnifiedResp.success(accessToken);
+        } else {
+            return UnifiedResp.fail("密码错误");
+        }
+    }
+
+    private String generateArticleAccessToken(Long articleId, String articlePassword) {
+        String loginToken;
+        if (StpUtil.isLogin()) {
+            loginToken = StpUtil.getLoginIdAsString();
+        } else {
+            loginToken = StpUtil.getAnonTokenSession().getToken();
+        }
+        return ArticleAccessTokenGenerator.generateToken(articleId.toString(),
+                articlePassword, loginToken);
+    }
+
+    @Override
+    public UnifiedResp<PageResult<ArticleCardVO>> pageArticlesByTagId(Long tagId, Integer page, Integer size) {
+        Page<Article> articlePage = new Page<>(page, size);
+        articlePage = articleMapper.selectPage(articlePage, new LambdaQueryWrapper<Article>()
+                .in(Article::getStatus, ArticleStatusEnum.PUBLIC.getCode(), ArticleStatusEnum.PRIVATE.getCode())
+                .eq(Article::getId, tagId)
+                .orderByDesc(Article::getCreateTime));
+        return UnifiedResp.success(convertArticlePageToPageResult(articlePage));
+    }
+
 
     private void updateArticleViewsCount(Long articleId) {
         redisTemplate.opsForZSet().incrementScore(ARTICLE_VIEWS_COUNT, articleId, 1D);
@@ -192,7 +258,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         // 查询标签信息
         List<ArticleTag> articleTags = articleTagService.list(new LambdaQueryWrapper<ArticleTag>()
                 .eq(ArticleTag::getArticleId, articleId));
-        List<Long> tagIds = articleTags.stream().map(ArticleTag::getTagId).collect(Collectors.toList());
+        List<Long> tagIds = articleTags.stream().map(ArticleTag::getTagId).toList();
         List<Tag> tags = tagService.listByIds(tagIds);
 
         // 构建VO

@@ -12,8 +12,9 @@ import static com.donts.enums.RespStatus.SUCCESS;
 @Data
 @Schema(description = "统一响应")
 public final class UnifiedResp<T extends Serializable> implements Serializable {
-    @Schema(name = "code", description = "响应码", type = "StatusCode")
-    private StatusCode code;
+
+    @Schema(name = "status", description = "响应码", type = "Integer")
+    private Integer status;
     @Schema(name = "message", description = "响应消息", type = "String")
     private String message;
     @Schema(name = "data", description = "响应数据", type = "模板类型")
@@ -23,7 +24,7 @@ public final class UnifiedResp<T extends Serializable> implements Serializable {
 
     //无参构造方法中将响应码置为DefaultStatus中的SUCCESS
     public UnifiedResp() {
-        this.setCode(SUCCESS);
+        this.status = SUCCESS.code();
         this.message = SUCCESS.message();
     }
 
@@ -51,21 +52,21 @@ public final class UnifiedResp<T extends Serializable> implements Serializable {
 
     public static <T extends Serializable> UnifiedResp<T> with(StatusCode code) {
         UnifiedResp<T> response = new UnifiedResp<>();
-        response.code = code;
+        response.status = code.code();
         response.message = code.message();
         return response;
     }
 
     public static <T extends Serializable> UnifiedResp<T> with(StatusCode code, String message) {
         UnifiedResp<T> response = new UnifiedResp<>();
-        response.code = code;
+        response.status = code.code();
         response.message = message;
         return response;
     }
 
     public static <T extends Serializable> UnifiedResp<T> with(StatusCode code, T data) {
         UnifiedResp<T> response = new UnifiedResp<>();
-        response.code = code;
+        response.status = code.code();
         response.message = code.message();
         response.data = data;
         return response;
@@ -73,7 +74,7 @@ public final class UnifiedResp<T extends Serializable> implements Serializable {
 
     public static <T extends Serializable> UnifiedResp<T> with(StatusCode code, String message, T data) {
         UnifiedResp<T> response = new UnifiedResp<>();
-        response.code = code;
+        response.status = code.code();
         response.message = message;
         response.data = data;
         return response;
