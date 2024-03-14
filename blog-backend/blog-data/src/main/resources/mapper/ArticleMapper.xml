@@ -72,4 +72,13 @@
           and status in (1, 2)
         limit 1
     </select>
+    <select id="selectLatestArchiveArticleId" resultType="java.lang.Long">
+        select id
+        from t_article
+        where is_delete = false
+          and status in (1, 2)
+          and is_
+        order by create_time desc
+        limit 1
+    </select>
 </mapper>

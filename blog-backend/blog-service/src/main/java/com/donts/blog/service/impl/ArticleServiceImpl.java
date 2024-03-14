@@ -17,6 +17,7 @@ import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleCardVO;
 import com.donts.vo.ArticleVO;
+import com.donts.vo.TimeLineArticleVO;
 import com.donts.vo.TopAndFeaturedArticlesVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +27,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -232,6 +231,38 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         return UnifiedResp.success(convertArticlePageToPageResult(articlePage));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cached(name = ARTICLE_TIME_LINE_CACHE_NAME, key = "#page+'-'+#size", expire = 24 * 60 * 60)
+    public UnifiedResp<LinkedList<TimeLineArticleVO>> listArticlesByTimeline(Integer page, Integer size) {
+        Page<Article> articlePage = new Page<>(page, size);
+        articlePage = articleMapper.selectPage(articlePage, new LambdaQueryWrapper<Article>()
+                .in(Article::getStatus, ArticleStatusEnum.PUBLIC.getCode(), ArticleStatusEnum.PRIVATE.getCode())
+                .eq(Article::getIsDelete, false)
+                .orderByDesc(Article::getCreateTime));
+        List<Article> articles = articlePage.getRecords();
+        List<ArticleCardVO> articleCardVOList =
+                articles.stream().map(DtoAndVoHelper::convertArticleToArticleCardVO).toList();
+        Map<String, List<ArticleCardVO>> timeLineMap = new LinkedHashMap<>();
+        articleCardVOList.forEach(articleCardVO ->
+        {
+            LocalDateTime createTime = articleCardVO.getCreateTime();
+            String yearMonth = createTime.getYear() + "-" + createTime.getMonthValue();
+            List<ArticleCardVO> articleCardVOS = timeLineMap.computeIfAbsent(yearMonth, k -> new ArrayList<>());
+            articleCardVOS.add(articleCardVO);
+        });
+        LinkedList<TimeLineArticleVO> timeLineArticleVOS = new LinkedList<>();
+        timeLineMap.forEach((time, articlesInTime) ->
+        {
+            TimeLineArticleVO timeLineArticleVO = TimeLineArticleVO.builder()
+                    .time(time)
+                    .articles(articlesInTime)
+                    .build();
+            timeLineArticleVOS.add(timeLineArticleVO);
+        });
+        return UnifiedResp.success(timeLineArticleVOS);
+    }
+
 
     private void updateArticleViewsCount(Long articleId) {
         redisTemplate.opsForZSet().incrementScore(ARTICLE_VIEWS_COUNT, articleId, 1D);
@@ -277,6 +308,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Transactional(readOnly = true)
+    //TODO：此处缓存未生效
     @Cached(name = ARTICLE_CARD_VO_CACHE_NAME, key = "#articleId", expire = 24 * 60 * 60)
     public ArticleCardVO getArticleCardVOFromDB(Long articleId) {
         Article article = articleMapper.selectById(articleId);

@@ -7,7 +7,10 @@ import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleCardVO;
 import com.donts.vo.ArticleVO;
+import com.donts.vo.TimeLineArticleVO;
 import com.donts.vo.TopAndFeaturedArticlesVO;
+
+import java.util.LinkedList;
 
 /**
  * @author djy12
@@ -67,4 +70,13 @@ public interface ArticleService extends IService<Article> {
      * @return 文章列表
      */
     UnifiedResp<PageResult<ArticleCardVO>> pageArticlesByTagId(Long tagId, Integer page, Integer size);
+
+    /**
+     * 按照时间线获取文章
+     *
+     * @param page 页码
+     * @param size 每页大小
+     * @return 文章归档
+     */
+    UnifiedResp<LinkedList<TimeLineArticleVO>> listArticlesByTimeline(Integer page, Integer size);
 }

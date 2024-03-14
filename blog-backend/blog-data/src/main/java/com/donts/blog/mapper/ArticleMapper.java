@@ -18,6 +18,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
     Long getPreArticleId(Long articleId);
 
     Long getNextArticleId(Long articleId);
+
+    Long selectLatestArchiveArticleId();
 }
 
 
