@@ -1,9 +1,11 @@
 package com.donts.blog.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,6 +15,9 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "t_article")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Article implements Serializable {
     /**
      *
@@ -90,11 +95,13 @@ public class Article implements Serializable {
     /**
      * 发表时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
 

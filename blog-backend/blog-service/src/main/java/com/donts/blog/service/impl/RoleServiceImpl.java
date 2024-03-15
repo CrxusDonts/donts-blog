@@ -57,7 +57,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     @SneakyThrows
     @Override
     public PageResult<RoleVO> listRoles(ConditionDTO conditionDTO) {
-        Page<Role> page = new Page<>(conditionDTO.getCurrent(), conditionDTO.getSize());
+        Page<Role> page = new Page<>(conditionDTO.getPage(), conditionDTO.getPageSize());
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<Role>()
                 .like(StringUtils.isNotBlank(conditionDTO.getKeywords()), Role::getRoleName, conditionDTO.getKeywords())
                 .orderByDesc(Role::getCreateTime);

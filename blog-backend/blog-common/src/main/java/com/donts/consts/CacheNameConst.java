@@ -1,23 +1,22 @@
 package com.donts.consts;
 
 public final class CacheNameConst {
-    private CacheNameConst() {
-    }
-
     /**
      * 用户角色缓存
      */
     public static final String USER_ROLE_CACHE_NAME = "userRoleCache_";
-
+    /**
+     * 默认KEY，SpEL表达式
+     */
+    public static final String DEFAULT_KEY = "'DEFAULT_KEY'";
     /**
      * 用户角色缓存 with Resource and Menu
      */
     public static final String USER_ROLE_CACHE_NAME_WITH_RESOURCE_AND_MENU = "userRoleCacheWithResourceAndMenu_";
-
     /**
      * 首页置顶和推荐文章缓存
      */
-    public static final String INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME = "indexTopAndRecommendArticleCache_";
+    public static final String INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME = "indexTopAndRecommendArticleCache";
     /**
      * 私密文章的可访问人员缓存
      */
@@ -26,7 +25,6 @@ public final class CacheNameConst {
      * 文章阅读量缓存
      */
     public static final String ARTICLE_VIEWS_COUNT = "articleViewsCount_";
-
     /**
      * 文章vo缓存
      */
@@ -39,4 +37,7 @@ public final class CacheNameConst {
      * 文章时间线缓存
      */
     public static final String ARTICLE_TIME_LINE_CACHE_NAME = "articleTimeLineCache_";
+
+    private CacheNameConst() {
+    }
 }

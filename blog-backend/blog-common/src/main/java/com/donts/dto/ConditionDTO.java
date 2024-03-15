@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 @Schema(description = "查询条件")
 public class ConditionDTO implements Serializable {
 
-    @Schema(name = "current", description = "页码", type = "Long")
-    private Long current;
+    @Schema(name = "page", description = "页码", type = "Long")
+    private Long page = 1L;
 
-    @Schema(name = "size", description = "条数", type = "Long")
-    private Long size;
+    @Schema(name = "pageSize", description = "条数", type = "Long")
+    private Long pageSize = 10L;
 
     @Schema(name = "keywords", description = "搜索内容", type = "String")
     private String keywords;

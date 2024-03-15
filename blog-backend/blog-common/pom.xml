@@ -11,7 +11,7 @@
 
     <artifactId>blog-common</artifactId>
     <name>blog-common</name>
-    <description>cmmmon 模块，存放公共代码</description>
+    <description>common 模块，存放公共代码</description>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -38,6 +38,10 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
