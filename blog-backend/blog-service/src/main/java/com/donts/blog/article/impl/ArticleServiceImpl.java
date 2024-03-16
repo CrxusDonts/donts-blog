@@ -1,6 +1,7 @@
 package com.donts.blog.article.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.alicp.jetcache.anno.CachePenetrationProtect;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,8 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.donts.consts.CacheNameConst.*;
-import static com.donts.enums.RespStatus.ARTICLE_ACCESS_FAIL;
-import static com.donts.enums.RespStatus.ARTICLE_DETAIL_FAIL;
+import static com.donts.enums.RespStatus.*;
 import static com.donts.helper.DtoAndVoHelper.convertArticleToArticleCardVO;
 import static com.donts.helper.DtoAndVoHelper.convertArticleToArticleVO;
 
@@ -76,6 +76,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     @Override
     @Cached(name = INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME, key = DEFAULT_KEY,
             expire = 24 * 60 * 60)
+    @CachePenetrationProtect(timeout = 3)
     public TopAndFeaturedArticlesVO listTopAndFeaturedArticles() {
         List<Article> articles = articleMapper.listTopAndFeaturedArticles();
         List<Long> userIds = articles.stream().map(Article::getUserId).toList();
@@ -102,10 +103,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     @Override
     public PageResult<ArticleCardVO> pageArticles(Integer page, Integer size) {
-        Page<Article> articlePage = new Page<>(page, size);
-        articlePage = articleMapper.selectPage(articlePage, new LambdaQueryWrapper<Article>()
-                .in(Article::getStatus, ArticleStatusEnum.PUBLIC.getCode(), ArticleStatusEnum.PRIVATE.getCode())
-                .orderByDesc(Article::getCreateTime));
+        Page<Article> articlePage = pageUnDeleteArticles(page, size);
         // 第一步：获取文章基本信息
         return convertArticlePageToPageResult(articlePage);
     }
@@ -124,7 +122,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     public UnifiedResp<ArticleVO> findArticleById(Long articleId) {
         Article articleForCheck = getArticleForCheck(articleId);
         if (articleForCheck == null) {
-            return UnifiedResp.fail("文章不存在");
+            return UnifiedResp.with(NOT_FOUND, "文章不存在");
         }
         //是否是私密文章
         if (ArticleStatusEnum.PRIVATE.getCode().equals(articleForCheck.getStatus())) {
@@ -145,7 +143,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     private Article getArticleForCheck(Long articleId) {
-        return articleMapper.selectById(articleId);
+        return articleMapper.selectOne(new LambdaQueryWrapper<Article>()
+                .eq(Article::getId, articleId)
+                .eq(Article::getIsDelete, false));
     }
 
 
@@ -166,7 +166,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if (article != null) {
             setArticleDetails(article, articleId, asyncPreArticle, asyncNextArticle);
         }
-
         return article;
     }
 
@@ -236,15 +235,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         return UnifiedResp.success(convertArticlePageToPageResult(articlePage));
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    @Cached(name = ARTICLE_TIME_LINE_CACHE_NAME, key = "#page+'-'+#size", expire = 24 * 60 * 60)
-    public UnifiedResp<LinkedList<TimeLineArticleVO>> listArticlesByTimeline(Integer page, Integer size) {
+    private Page<Article> pageUnDeleteArticles(Integer page, Integer size) {
         Page<Article> articlePage = new Page<>(page, size);
-        articlePage = articleMapper.selectPage(articlePage, new LambdaQueryWrapper<Article>()
+        return articleMapper.selectPage(articlePage, new LambdaQueryWrapper<Article>()
                 .in(Article::getStatus, ArticleStatusEnum.PUBLIC.getCode(), ArticleStatusEnum.PRIVATE.getCode())
                 .eq(Article::getIsDelete, false)
                 .orderByDesc(Article::getCreateTime));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnifiedResp<LinkedList<TimeLineArticleVO>> listArticlesByTimeline(Integer page, Integer size) {
+        Page<Article> articlePage = pageUnDeleteArticles(page, size);
         List<Article> articles = articlePage.getRecords();
         List<ArticleCardVO> articleCardVOList =
                 articles.stream().map(DtoAndVoHelper::convertArticleToArticleCardVO).toList();
@@ -274,7 +276,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Transactional(readOnly = true)
-    @Cached(name = ARTICLE_VO_CACHE_NAME, key = "#articleId", expire = 24 * 60 * 60)
+    @Cached(name = ARTICLE_VO_CACHE_NAME, key = ARTICLE_ID_SPEL_KEY, expire = 24 * 60 * 60)
     public ArticleVO getArticleVOFromDB(Long articleId) {
         // 查询文章信息
         Article article = articleMapper.selectOne(new LambdaQueryWrapper<Article>()
@@ -313,7 +315,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Transactional(readOnly = true)
-    @Cached(name = ARTICLE_CARD_VO_CACHE_NAME, key = "#articleId", expire = 24 * 60 * 60)
+    @Cached(name = ARTICLE_CARD_VO_CACHE_NAME, key = ARTICLE_ID_SPEL_KEY, expire = 24 * 60 * 60)
     public ArticleCardVO getArticleCardVOFromDB(Long articleId) {
         Article article = articleMapper.selectById(articleId);
         if (article == null) {

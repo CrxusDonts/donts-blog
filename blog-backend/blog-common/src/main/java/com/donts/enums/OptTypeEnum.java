@@ -8,7 +8,7 @@ public enum OptTypeEnum {
     SAVE("新增"),
     UPDATE("修改"),
     DELETE("删除"),
-    UPLOAD("上传"),
+    UPLOAD_FILE("上传文件"),
     EXPORT("导出"),
     OTHER("其他");
 

@@ -4,6 +4,7 @@ import com.donts.blog.aop.anno.OptLog;
 import com.donts.blog.article.ArticleAdminService;
 import com.donts.dto.ArticleTopFeaturedDTO;
 import com.donts.dto.ConditionDTO;
+import com.donts.dto.LogicDeleteStatusDTO;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleAdminVO;
@@ -13,6 +14,9 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.donts.enums.OptTypeEnum.DELETE;
 import static com.donts.enums.OptTypeEnum.UPDATE;
 
 @RestController
@@ -35,4 +39,18 @@ public class AdminArticleController {
     public UnifiedResp<String> updateArticleTopAndFeatured(@Valid @RequestBody ArticleTopFeaturedDTO articleTopFeaturedDTO) {
         return articleAdminService.updateArticleTopAndFeatured(articleTopFeaturedDTO);
     }
+
+    @Operation(summary = "删除或者恢复文章")
+    @PutMapping("/logicDelete")
+    public UnifiedResp<String> updateArticleDeleteLogically(@Valid @RequestBody LogicDeleteStatusDTO logicDeleteStatusDTO) {
+        return articleAdminService.updateArticleDeleteLogically(logicDeleteStatusDTO);
+    }
+
+    @OptLog(optType = DELETE)
+    @Operation(summary = "物理删除文章")
+    @DeleteMapping
+    public UnifiedResp<String> deleteArticles(@RequestBody List<Long> articleIds) {
+        return articleAdminService.deleteArticles(articleIds);
+    }
+
 }

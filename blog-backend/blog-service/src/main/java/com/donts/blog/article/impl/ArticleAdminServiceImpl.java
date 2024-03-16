@@ -9,6 +9,8 @@ import com.donts.blog.entity.ArticleTag;
 import com.donts.blog.entity.Tag;
 import com.donts.dto.ArticleTopFeaturedDTO;
 import com.donts.dto.ConditionDTO;
+import com.donts.dto.LogicDeleteStatusDTO;
+import com.donts.helper.CacheHelper;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleAdminVO;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,6 +47,9 @@ public class ArticleAdminServiceImpl implements ArticleAdminService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private CacheHelper cacheHelper;
 
     @Override
     public UnifiedResp<PageResult<ArticleAdminVO>> listArticlesForAdmin(ConditionDTO conditionDTO) {
@@ -96,6 +102,37 @@ public class ArticleAdminServiceImpl implements ArticleAdminService {
                 .build();
         boolean isSuccess = articleService.updateById(article);
         return isSuccess ? UnifiedResp.success("修改成功") : UnifiedResp.fail("修改失败");
+    }
+
+    @Override
+    @CacheInvalidate(name = INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME, key = DEFAULT_KEY
+            , condition = "#result.status == 0")
+    public UnifiedResp<String> updateArticleDeleteLogically(LogicDeleteStatusDTO logicDeleteStatusDTO) {
+        List<Article> articles = logicDeleteStatusDTO.getIds().stream()
+                .map(id -> Article.builder()
+                        .id(id)
+                        .isDelete(logicDeleteStatusDTO.getIsDelete())
+                        .build())
+                .toList();
+        boolean isSuccess = articleService.updateBatchById(articles);
+        if (isSuccess) {
+            cacheHelper.clearCacheByArticleIds(logicDeleteStatusDTO.getIds());
+            return UnifiedResp.success("修改成功");
+        } else {
+            return UnifiedResp.fail("修改失败");
+        }
+    }
+
+    @Override
+    @CacheInvalidate(name = INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME, key = DEFAULT_KEY
+            , condition = "#result.status == 0")
+    @Transactional(rollbackFor = Exception.class)
+    public UnifiedResp<String> deleteArticles(List<Long> articleIds) {
+        articleTagService.remove(new LambdaQueryWrapper<ArticleTag>()
+                .in(ArticleTag::getArticleId, articleIds));
+        articleService.removeByIds(articleIds);
+        cacheHelper.clearCacheByArticleIds(articleIds);
+        return UnifiedResp.success("删除成功");
     }
 
     /**

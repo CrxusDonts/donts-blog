@@ -10,6 +10,7 @@ import com.donts.blog.mapper.TagMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +31,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public List<Tag> listTagsByArticleId(Long articleId) {
         List<ArticleTag> articleTagRelations = articleTagService
                 .list(new LambdaQueryWrapper<ArticleTag>().eq(ArticleTag::getArticleId, articleId));
+        if (articleTagRelations.isEmpty()) {
+            return Collections.emptyList();
+        }
         return tagMapper.selectList(new LambdaQueryWrapper<Tag>().in(Tag::getId,
                 articleTagRelations.stream().map(ArticleTag::getTagId).toList())
         );

@@ -18,10 +18,6 @@ public final class CacheNameConst {
      */
     public static final String INDEX_TOP_AND_RECOMMEND_ARTICLE_CACHE_NAME = "indexTopAndRecommendArticleCache";
     /**
-     * 私密文章的可访问人员缓存
-     */
-    public static final String PRIVATE_ARTICLE_ACCESSIBLE_USER_CACHE_NAME = "privateArticleAccessibleUserCache_";
-    /**
      * 文章阅读量缓存
      */
     public static final String ARTICLE_VIEWS_COUNT = "articleViewsCount_";
@@ -30,13 +26,13 @@ public final class CacheNameConst {
      */
     public static final String ARTICLE_VO_CACHE_NAME = "articleVoCache_";
     /**
+     * #articleId SPEl表达式
+     */
+    public static final String ARTICLE_ID_SPEL_KEY = "#articleId";
+    /**
      * 文章CardVO缓存
      */
     public static final String ARTICLE_CARD_VO_CACHE_NAME = "articleCardVoCache_";
-    /**
-     * 文章时间线缓存
-     */
-    public static final String ARTICLE_TIME_LINE_CACHE_NAME = "articleTimeLineCache_";
 
     private CacheNameConst() {
     }

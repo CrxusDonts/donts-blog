@@ -18,6 +18,7 @@ public class BlogApplicationListener {
     private OperationLogService operationLogService;
 
     @Async
+    //TODO ：async自定义线程池，避免使用默认线程池
     @EventListener(OperationLogEvent.class)
     public void saveOperationLog(OperationLogEvent operationLogEvent) {
         log.info(" {} saveOperationLog: {}", LOG_PREFIX, operationLogEvent.getSource());
