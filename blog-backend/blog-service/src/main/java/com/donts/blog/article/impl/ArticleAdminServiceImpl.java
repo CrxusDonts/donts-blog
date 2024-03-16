@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.donts.blog.article.*;
 import com.donts.blog.entity.Article;
 import com.donts.blog.entity.ArticleTag;
+import com.donts.blog.entity.Category;
 import com.donts.blog.entity.Tag;
 import com.donts.dto.ArticleTopFeaturedDTO;
 import com.donts.dto.ConditionDTO;
@@ -14,10 +15,12 @@ import com.donts.helper.CacheHelper;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleAdminVO;
+import com.donts.vo.ArticleAdminViewVO;
 import com.donts.vo.TagVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -133,6 +136,23 @@ public class ArticleAdminServiceImpl implements ArticleAdminService {
         articleService.removeByIds(articleIds);
         cacheHelper.clearCacheByArticleIds(articleIds);
         return UnifiedResp.success("删除成功");
+    }
+
+    @Override
+    public UnifiedResp<ArticleAdminViewVO> getArticleByIdForAdmin(Long articleId) {
+        Article article = articleService.getById(articleId);
+        if (Objects.isNull(article)) {
+            return UnifiedResp.fail("文章不存在");
+        }
+        Category category = categoryService.getById(article.getCategoryId());
+        List<Tag> tags = tagService.listTagsByArticleId(articleId);
+        ArticleAdminViewVO articleAdminViewVO = new ArticleAdminViewVO();
+        BeanUtils.copyProperties(article, articleAdminViewVO);
+        articleAdminViewVO.setCategoryName(Optional.ofNullable(category)
+                .map(Category::getCategoryName)
+                .orElse(""));
+        articleAdminViewVO.setTags(tags);
+        return UnifiedResp.success(articleAdminViewVO);
     }
 
     /**

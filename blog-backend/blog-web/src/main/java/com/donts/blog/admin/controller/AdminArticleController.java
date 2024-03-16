@@ -8,6 +8,7 @@ import com.donts.dto.LogicDeleteStatusDTO;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleAdminVO;
+import com.donts.vo.ArticleAdminViewVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -51,6 +52,12 @@ public class AdminArticleController {
     @DeleteMapping
     public UnifiedResp<String> deleteArticles(@RequestBody List<Long> articleIds) {
         return articleAdminService.deleteArticles(articleIds);
+    }
+
+    @Operation(summary = "根据id查看后台文章")
+    @GetMapping("/{articleId}")
+    public UnifiedResp<ArticleAdminViewVO> getArticleBackById(@PathVariable("articleId") Long articleId) {
+        return articleAdminService.getArticleByIdForAdmin(articleId);
     }
 
 }

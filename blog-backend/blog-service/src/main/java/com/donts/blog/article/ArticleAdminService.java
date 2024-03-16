@@ -6,6 +6,7 @@ import com.donts.dto.LogicDeleteStatusDTO;
 import com.donts.response.PageResult;
 import com.donts.response.UnifiedResp;
 import com.donts.vo.ArticleAdminVO;
+import com.donts.vo.ArticleAdminViewVO;
 
 import java.util.List;
 
@@ -38,4 +39,12 @@ public interface ArticleAdminService {
      * @return 操作结果
      */
     UnifiedResp<String> deleteArticles(List<Long> articleIds);
+
+    /**
+     * 根据id查看后台文章
+     *
+     * @param articleId 文章id
+     * @return 文章详情
+     */
+    UnifiedResp<ArticleAdminViewVO> getArticleByIdForAdmin(Long articleId);
 }
